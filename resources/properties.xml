@@ -1,0 +1,61 @@
+<resources>
+    <strings>
+        <string id="AppName">Mobi</string>
+        <string id="f1">#1</string>
+        <string id="f2">#2</string>
+        <string id="f3">#3</string>
+        <string id="f4">#4</string>
+        <string id="f5">#5</string>
+        <string id="f6">#6</string>
+        <string id="f7">#7</string>
+        <string id="f8">#8</string>
+        <string id="f9">#9</string>
+        <string id="f10">#10</string>
+    </strings>
+
+    <properties>
+        <property id="fav1" type="String">Preset Station</property>
+        <property id="fav2" type="String">change me</property>
+        <property id="fav3" type="String">in settings</property>
+        <property id="fav4" type="String"></property>
+        <property id="fav5" type="String"></property>
+        <property id="fav6" type="String"></property>
+        <property id="fav7" type="String"></property>
+        <property id="fav8" type="String"></property>
+        <property id="fav9" type="String"></property>
+        <property id="fav10" type="String"></property>
+    </properties>
+
+    <settings>
+        <setting propertyKey="@Properties.fav1" title="@Strings.f1">
+            <settingConfig type="alphaNumeric" maxLength="30" required="true"/>
+        </setting>
+        <setting propertyKey="@Properties.fav2" title="@Strings.f2">
+            <settingConfig type="alphaNumeric" maxLength="30" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.fav3" title="@Strings.f3">
+            <settingConfig type="alphaNumeric" maxLength="30" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.fav4" title="@Strings.f4">
+            <settingConfig type="alphaNumeric" maxLength="30" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.fav5" title="@Strings.f5">
+            <settingConfig type="alphaNumeric" maxLength="30" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.fav6" title="@Strings.f6">
+            <settingConfig type="alphaNumeric" maxLength="30" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.fav7" title="@Strings.f7">
+            <settingConfig type="alphaNumeric" maxLength="30" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.fav8" title="@Strings.f8">
+            <settingConfig type="alphaNumeric" maxLength="30" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.fav9" title="@Strings.f9">
+            <settingConfig type="alphaNumeric" maxLength="30" required="false"/>
+        </setting>
+        <setting propertyKey="@Properties.fav10" title="@Strings.f10">
+            <settingConfig type="alphaNumeric" maxLength="30" required="false"/>
+        </setting>
+    </settings>
+</resources>

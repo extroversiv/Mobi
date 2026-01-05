@@ -1,0 +1,8 @@
+bin/
+output/
+export/
+publish/
+.vscode/
+.idea/
+*.zip
+*.iq
