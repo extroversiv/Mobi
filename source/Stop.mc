@@ -4,11 +4,13 @@ import Toybox.Lang;
 
 class Stop extends WatchUi.BehaviorDelegate {
   protected const HEADER as Dictionary = $.Tools.getRequestGet();
+  var _stationsSelector as $.StationsSelector?;
   protected var _url as String = "";
   protected var _params as Dictionary = {};
 
-  function initialize() {
+  function initialize(stationsSelector as $.StationsSelector?) {
     WatchUi.BehaviorDelegate.initialize();
+    _stationsSelector = stationsSelector;
     initRequest();
   }
 
@@ -17,18 +19,18 @@ class Stop extends WatchUi.BehaviorDelegate {
   }
 
   function onSelect() as Boolean {
-    var name = $.stationsSelector.getStation();
+    var name = _stationsSelector.getStation();
     if (name == null) {
       return false;
     }
-    var id = $.stationsSelector.getId();
+    var id = _stationsSelector.getId();
     if (id == null) {
       return false;
     }
     $.stationsManager.addStationId(name, id);
 
     var view = new $.DepView();
-    var delegate = new $.Dep(view.method(:onReceive));
+    var delegate = new $.Dep(view.getPageManager(), view.method(:onReceive));
     WatchUi.switchToView(view, delegate, WatchUi.SLIDE_LEFT);
     delegate.start();
     return true;
@@ -40,21 +42,21 @@ class Stop extends WatchUi.BehaviorDelegate {
   }
 
   function onNextPage() as Boolean {
-    if ($.stationsSelector.incElement()) {
+    if (_stationsSelector.incElement()) {
       WatchUi.requestUpdate();
     }
     return true;
   }
 
   function onPreviousPage() as Boolean {
-    if ($.stationsSelector.decElement()) {
+    if (_stationsSelector.decElement()) {
       WatchUi.requestUpdate();
     }
     return true;
   }
 
   protected function makeRequest() as Void {
-    $.stationsSelector.setNotify("Checking stops ...");
+    _stationsSelector.setNotify("Checking stops ...");
     // System.println(_url);
     // System.println(_params);
     Communications.makeWebRequest(_url, _params, HEADER, method(:onReceive));
@@ -70,14 +72,14 @@ class Stop extends WatchUi.BehaviorDelegate {
         if (stationsNameId.size() == 0) {
           if ($.stationsManager.isPosition()) {
             // special case where getting the position was active
-            $.stationsSelector.setNotify("No stops nearby.");
+            _stationsSelector.setNotify("No stops nearby.");
           } else {
-            $.stationsSelector.setNotify(
+            _stationsSelector.setNotify(
               "No stops found for \n" + $.stationsManager.getStation()
             );
           }
         } else {
-          $.stationsSelector.setStationIdList(stationsNameId);
+          _stationsSelector.setStationIdList(stationsNameId);
         }
       } else {
         // ToDo> restart on -403 error
@@ -85,12 +87,12 @@ class Stop extends WatchUi.BehaviorDelegate {
           responseCode == -402 || responseCode == -403
             ? "Not enough memory."
             : "Is the internet available?";
-        $.stationsSelector.setNotify(
+        _stationsSelector.setNotify(
           "Failed to load stops.\nError: " + responseCode + "\n" + message
         );
       }
     } catch (e) {
-      $.stationsSelector.setNotify("Something went wrong.");
+      _stationsSelector.setNotify("Something went wrong.");
     }
   }
 
@@ -100,7 +102,7 @@ class Stop extends WatchUi.BehaviorDelegate {
 
   protected function initRequest() {
     // https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/motis-project/motis/refs/tags/v2.7.0/openapi.yaml#tag/geocode/operation/geocode
-    _url = "https://api.transitous.org/api/v1/geocode/";
+    _url = "https://api.transitous.org/api/v1/geocode";
     _params = {
       "text" => $.stationsManager.getNameCleaned(),
       "type" => "STOP",

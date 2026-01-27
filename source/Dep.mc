@@ -6,14 +6,17 @@ import Toybox.Lang;
 class Dep extends WatchUi.BehaviorDelegate {
   private const RESULTS as Array = [2, 3, 5, 10, 15, 20, 30, 40];
   private const HEADER as Dictionary = $.Tools.getRequestGet();
+  private var _pageManager as $.PageManager;
   protected var _url as String = "";
   protected var _params as Dictionary = {};
   private var _notify as (Method(args as Array<String> or String));
   private var _forceExit = false;
   private var _retryN as Number = 0;
 
-  function initialize(notify as (Method(args as Array<String> or String))) {
+  function initialize(pageManager as $.PageManager,
+  notify as (Method(args as Array<String> or String))) {
     WatchUi.BehaviorDelegate.initialize();
+    _pageManager = pageManager;
     _notify = notify;
   }
 
@@ -34,28 +37,28 @@ class Dep extends WatchUi.BehaviorDelegate {
   }
 
   function onNextPage() as Boolean {
-    if ($.pageManager.increment()) {
+    if (_pageManager.increment()) {
       WatchUi.requestUpdate();
     }
     return true;
   }
 
   function onPreviousPage() as Boolean {
-    if ($.pageManager.decrement()) {
+    if (_pageManager.decrement()) {
       WatchUi.requestUpdate();
     }
     return true;
   }
 
   function start() as Void {
-    $.pageManager.reset();
+    _pageManager.reset();
     _retryN = 0;
     makeRequest();
   }
 
   private function makeRequest() as Void {
     if (_retryN == 0) {
-      _notify.invoke("loading timetable ...");
+      _notify.invoke("loading departures ...");
     }
     initRequest();
     // System.println(_url);
@@ -117,7 +120,7 @@ class Dep extends WatchUi.BehaviorDelegate {
             message = "Remote server error.";
           }
         }
-        _notify.invoke(["Failed to load timetable.", "Error: " + code, message]);
+        _notify.invoke(["Failed to load departures.", "Error: " + code, message]);
       }
     } catch (e) {
       _notify.invoke("Something went wrong.");
@@ -125,8 +128,8 @@ class Dep extends WatchUi.BehaviorDelegate {
   }
 
   private function initRequest() {
-    // https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/motis-project/motis/refs/tags/v2.7.0/openapi.yaml#tag/timetable/operation/stoptimes
-    _url = "https://api.transitous.org/api/v5/stoptimes/";
+    // https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/motis-project/motis/refs/tags/v2.8.2/openapi.yaml#tag/timetable/operation/stoptimes
+    _url = "https://api.transitous.org/api/v5/stoptimes";
 
     var idx = $.stationsManager.getLimResults();
     if (idx == null || idx < 0) {
@@ -137,7 +140,8 @@ class Dep extends WatchUi.BehaviorDelegate {
     _params = {
       "stopId" => $.stationsManager.getId(),
       "n" => RESULTS[idx],
-      "radius" => 100, // include stops within 100m radius -> this includes departures from the same stops but other providers and makes the choice of the stop less problematic
+      "radius" => 100,      // include stops within 100m radius -> this includes departures from the same stops from other providers and makes the choice of the stop less problematic
+      "withAlerts" => false // not needed and can use up a lot of memory
     };
 
     var prod = $.stationsManager.getProducts();

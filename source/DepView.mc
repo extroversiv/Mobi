@@ -5,6 +5,7 @@ using Toybox.Timer;
 import Toybox.Lang;
 
 class DepView extends WatchUi.View {
+  private var _pageManager as $.PageManager;
   private var _text as Array<String> = [""];
   private var _maxChar as Number = 1; // gets set in onLayout
   private var _maxLines as Number = 1; // gets set in onLayout
@@ -13,8 +14,12 @@ class DepView extends WatchUi.View {
 
   function initialize() {
     View.initialize();
-    $.pageManager = new $.PageManager();
+    _pageManager = new $.PageManager();
     _station = $.stationsManager.getStation();
+  }
+
+  function getPageManager() {
+    return _pageManager;
   }
 
   function onHide() as Void {
@@ -45,8 +50,8 @@ class DepView extends WatchUi.View {
 
     // departures table
     var maxPage = Math.ceil(_text.size().toFloat() / _maxLines).toNumber();
-    $.pageManager.setMax(maxPage);
-    var page = $.pageManager.getCurrent();
+    _pageManager.setMax(maxPage);
+    var page = _pageManager.getCurrent();
     var departures = "";
     var startLine = (page - 1) * _maxLines;
     var yClock = dc.getHeight() - dc.getFontHeight(Graphics.FONT_TINY);

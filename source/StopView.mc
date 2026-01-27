@@ -3,12 +3,17 @@ using Toybox.Graphics;
 import Toybox.Lang;
 
 class StopView extends WatchUi.View {
+  private var _stationsSelector as $.StationsSelector;
   private var _maxCharSmall = 1;
   private var _maxCharXTiny = 1;
 
   function initialize() {
     View.initialize();
-    $.stationsSelector = new $.StationsSelector();
+    _stationsSelector = new $.StationsSelector();
+  }
+
+  function getStationsSelector(){
+    return _stationsSelector;
   }
 
   function onLayout(dc) {
@@ -28,13 +33,13 @@ class StopView extends WatchUi.View {
       dc.getWidth() * $.Tools.marginH,
       dc.getHeight() * $.Tools.marginV,
       Graphics.FONT_XTINY,
-      $.stationsSelector.getNotify(),
+      _stationsSelector.getNotify(),
       Graphics.TEXT_JUSTIFY_LEFT
     );
 
     // menu
-    var elementNumber = $.stationsSelector.getElement();
-    var stationsList = $.stationsSelector.getStationsList() as Array<String>;
+    var elementNumber = _stationsSelector.getElement();
+    var stationsList = _stationsSelector.getStationsList() as Array<String>;
 
     var x = dc.getWidth() / 2;
     var y = (dc.getHeight() - textHeightSmall) / 2 - elementNumber * textHeightXTiny;

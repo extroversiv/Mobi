@@ -9,8 +9,8 @@ class Position extends Stop {
   static const LAST_TIME = "lastTime";
   static const LAST_DATA = "lastData";
 
-  function initialize() {
-    $.Stop.initialize();
+  function initialize(stationsSelector as $.StationsSelector?) {
+    $.Stop.initialize(stationsSelector);
   }
 
   static function checkAndDeleteData(forceDelete as Boolean) as Boolean {
@@ -37,7 +37,7 @@ class Position extends Stop {
       }
       if (stationsNameId != null && stationsNameId.size() > 0) {
         // use the previously stored station data
-        $.stationsSelector.setStationIdList(stationsNameId);
+        _stationsSelector.setStationIdList(stationsNameId);
         WatchUi.requestUpdate();
       } else {
         // use previously stored position
@@ -50,7 +50,7 @@ class Position extends Stop {
       }
     } else {
       // search for the position signal and find the stops
-      $.stationsSelector.setNotify("Waiting for position ...");
+      _stationsSelector.setNotify("Waiting for position ...");
       WatchUi.requestUpdate();
       Position.enableLocationEvents(
         Position.LOCATION_ONE_SHOT,

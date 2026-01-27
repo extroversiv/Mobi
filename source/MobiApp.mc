@@ -3,8 +3,6 @@ using Toybox.WatchUi;
 import Toybox.Lang;
 
 var stationsManager as $.StationsManager? = null;
-var stationsSelector as $.StationsSelector? = null;
-var pageManager as $.PageManager? = null;
 
 class MobiApp extends Application.AppBase {
   function initialize() {

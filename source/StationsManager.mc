@@ -57,7 +57,7 @@ class StationsManager {
   private function resetStationsListFromSettings() as Void {
     // fill stations list from settings values
     _stationsList = ["@"];
-    for (var i = 1; i < +10; i++) {
+    for (var i = 1; i <= 10; i++) {
       var s = $.Tools.trim(Properties.getValue("fav" + i));
       if (s.length() > 0) {
         _stationsList.add(s);

@@ -33,16 +33,16 @@ class Menu extends WatchUi.BehaviorDelegate {
     var delegate;
     if ($.stationsManager.getElement() == 0) {
       view = new $.StopView();
-      delegate = new $.Position();
+      delegate = new $.Position(view.getStationsSelector());
     } else {
       $.stationsManager.prioritizeCurrentElement();
       var id = $.stationsManager.getId();
       if (id == null || id == "") {
         view = new $.StopView();
-        delegate = new $.Stop();
+        delegate = new $.Stop(view.getStationsSelector());
       } else {
         view = new $.DepView();
-        delegate = new $.Dep(view.method(:onReceive));
+        delegate = new $.Dep(view.getPageManager(), view.method(:onReceive));
       }
     }
     WatchUi.switchToView(view, delegate, WatchUi.SLIDE_LEFT);
