@@ -6,7 +6,6 @@ class StationsSelector {
   private var _element = 0;
   private var _stationList as Array<String> = [];
   private var _idList as Array<String> = [];
-  private var _notify = "";
 
   function initialize() {}
 
@@ -59,15 +58,5 @@ class StationsSelector {
         _idList.add(s[1]);
       }
     }
-    setNotify("");
-  }
-
-  function setNotify(notify as String) {
-    _notify = notify;
-    WatchUi.requestUpdate();
-  }
-
-  function getNotify() as String {
-    return _notify;
   }
 }

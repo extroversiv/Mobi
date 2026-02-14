@@ -9,8 +9,12 @@ class Position extends Stop {
   static const LAST_TIME = "lastTime";
   static const LAST_DATA = "lastData";
 
-  function initialize() {
-    $.Stop.initialize();
+  function initialize(
+    stationsSelector as $.StationsSelector,
+    notify as (Method(text as Array<String> or String)),
+    show as (Method())
+  ) {
+    $.Stop.initialize(stationsSelector, notify, show);
   }
 
   static function checkAndDeleteData(forceDelete as Boolean) as Boolean {
@@ -37,8 +41,8 @@ class Position extends Stop {
       }
       if (stationsNameId != null && stationsNameId.size() > 0) {
         // use the previously stored station data
-        $.stationsSelector.setStationIdList(stationsNameId);
-        WatchUi.requestUpdate();
+        _stationsSelector.setStationIdList(stationsNameId);
+        _show.invoke();
       } else {
         // use previously stored position
         var coords = Storage.getValue(LAST_COORDS) as Array<Double>;
@@ -50,8 +54,7 @@ class Position extends Stop {
       }
     } else {
       // search for the position signal and find the stops
-      $.stationsSelector.setNotify("Waiting for position ...");
-      WatchUi.requestUpdate();
+      _notify.invoke("Waiting for position ...");
       Position.enableLocationEvents(
         Position.LOCATION_ONE_SHOT,
         method(:onPosition)

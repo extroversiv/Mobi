@@ -1,14 +1,26 @@
 using Toybox.Communications;
 using Toybox.WatchUi;
+using Toybox.Weather;
 import Toybox.Lang;
 
 class Stop extends WatchUi.BehaviorDelegate {
   protected const HEADER as Dictionary = $.Tools.getRequestGet();
+  protected var _stationsSelector as $.StationsSelector;
+  protected var _notify as (Method(text as Array<String> or String));
+  protected var _show as (Method());
   protected var _url as String = "";
   protected var _params as Dictionary = {};
+  protected var _forceExit = false;
 
-  function initialize() {
+  function initialize(
+    stationsSelector as $.StationsSelector,
+    notify as (Method(text as Array<String> or String)),
+    show as (Method())
+  ) {
     WatchUi.BehaviorDelegate.initialize();
+    _stationsSelector = stationsSelector;
+    _notify = notify;
+    _show = show;
     initRequest();
   }
 
@@ -17,80 +29,96 @@ class Stop extends WatchUi.BehaviorDelegate {
   }
 
   function onSelect() as Boolean {
-    var name = $.stationsSelector.getStation();
+    if (_forceExit) {
+      System.exit();
+    }
+    var name = _stationsSelector.getStation();
     if (name == null) {
       return false;
     }
-    var id = $.stationsSelector.getId();
+    var id = _stationsSelector.getId();
     if (id == null) {
       return false;
     }
     $.stationsManager.addStationId(name, id);
 
     var view = new $.DepView();
-    var delegate = new $.Dep(view.method(:onReceive));
+    var delegate = new $.Dep(
+      view.getPageManager(),
+      view.method(:onReceive),
+      view.method(:showDepartures)
+    );
     WatchUi.switchToView(view, delegate, WatchUi.SLIDE_LEFT);
     delegate.start();
     return true;
   }
 
   function onBack() as Boolean {
+    if (_forceExit) {
+      System.exit();
+    }
     WatchUi.switchToView(new $.MenuView(), new $.Menu(), WatchUi.SLIDE_RIGHT);
     return true;
   }
 
   function onNextPage() as Boolean {
-    if ($.stationsSelector.incElement()) {
+    if (_stationsSelector.incElement()) {
       WatchUi.requestUpdate();
     }
     return true;
   }
 
   function onPreviousPage() as Boolean {
-    if ($.stationsSelector.decElement()) {
+    if (_stationsSelector.decElement()) {
       WatchUi.requestUpdate();
     }
     return true;
   }
 
   protected function makeRequest() as Void {
-    $.stationsSelector.setNotify("Checking stops ...");
+    _notify.invoke("Checking stops ...");
     // System.println(_url);
     // System.println(_params);
     Communications.makeWebRequest(_url, _params, HEADER, method(:onReceive));
   }
 
   function onReceive(
-    responseCode as Number,
+    code as Number,
     data as Dictionary or String or Null
   ) as Void {
     try {
-      if (responseCode == 200) {
-        var stationsNameId = parseData(data);
-        if (stationsNameId.size() == 0) {
-          if ($.stationsManager.isPosition()) {
-            // special case where getting the position was active
-            $.stationsSelector.setNotify("No stops nearby.");
+      if (code == 200) {
+        if (data instanceof Dictionary || data instanceof Array) {
+          var results = parseData(data);
+          if (results.size() == 0) {
+            if ($.stationsManager.isPosition()) {
+              // special case where getting the position was active
+              _notify.invoke("No stops nearby.");
+            } else {
+              _notify.invoke(
+                "No stops found for\n" + $.stationsManager.getStation()
+              );
+            }
           } else {
-            $.stationsSelector.setNotify(
-              "No stops found for \n" + $.stationsManager.getStation()
-            );
+            _stationsSelector.setStationIdList(results);
+            _show.invoke();
           }
         } else {
-          $.stationsSelector.setStationIdList(stationsNameId);
+          _notify.invoke("Wrong stops data.");
         }
       } else {
-        // ToDo> restart on -403 error
-        var message =
-          responseCode == -402 || responseCode == -403
-            ? "Not enough memory."
-            : "Is the internet available?";
-        $.stationsSelector.setNotify(
-          "Failed to load stops.\nError: " + responseCode + "\n" + message
-        );
+        if (code == -403) {
+          // seems to be a memory leak with -403 -> exit the app
+          _forceExit = true;
+        }
+        _notify.invoke([
+          "Failed to load stops.",
+          "Error: " + code,
+          $.Tools.errorMessage(code),
+        ]);
       }
     } catch (e) {
-      $.stationsSelector.setNotify("Something went wrong.");
+      _notify.invoke("Something went wrong\nloading stops.");
     }
   }
 
@@ -99,24 +127,24 @@ class Stop extends WatchUi.BehaviorDelegate {
   }
 
   protected function initRequest() {
-    // https://redocly.github.io/redoc/?url=https://raw.githubusercontent.com/motis-project/motis/refs/tags/v2.7.0/openapi.yaml#tag/geocode/operation/geocode
-    _url = "https://api.transitous.org/api/v1/geocode/";
+    _url = "https://api.transitous.org/api/v1/geocode";
     _params = {
       "text" => $.stationsManager.getNameCleaned(),
       "type" => "STOP",
     };
-    // get a position signal to improve the stop search
-    var pos = Weather.getCurrentConditions().observationLocationPosition;
-    if (pos != null) {
-      pos = pos.toDegrees();
-      if (
-        pos != null &&
-        pos.size() == 2 &&
-        pos[0].abs() < 90 &&
-        pos[1].abs() < 180
-      ) {
-        _params.put("placeBias", 5);
-        setCoords(pos);
+
+    // try to get a position signal to improve the stop search
+    if (Toybox has :Weather) {
+      var conditions = Weather.getCurrentConditions();
+      if (conditions != null) {
+        var pos = conditions.observationLocationPosition;
+        if (pos != null) {
+          pos = pos.toDegrees();
+          if (pos != null && pos[0].abs() < 90 && pos[1].abs() < 180) {
+            _params.put("placeBias", 5);
+            setCoords(pos);
+          }
+        }
       }
     }
   }

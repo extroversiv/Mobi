@@ -7,28 +7,6 @@ using Toybox.Graphics;
 import Toybox.Lang;
 
 class Tools {
-  static const marginV = 0.2; // top and bottom margin of departure box
-  static const marginH = 0.1; // left and right margin of departure box
-
-  static function getCharPerLine(
-    dc as Graphics.Dc,
-    font as Graphics.FontType
-  ) as Number {
-    var chars = "AbCdEfGhIj";
-    var avgCharWidth =
-      dc.getTextWidthInPixels(chars, font).toFloat() / chars.length();
-    var charPerLine = ((1 - 2 * marginH) * dc.getWidth()) / avgCharWidth;
-    return charPerLine.toNumber() + 1;
-  }
-
-  static function getLines(
-    dc as Graphics.Dc,
-    font as Graphics.FontType
-  ) as Number {
-    var endLines =
-      ((1 - 2 * marginV) * dc.getHeight()) / dc.getFontHeight(font);
-    return endLines.toNumber();
-  }
 
   static function getRequestGet() as Dictionary {
     return {
@@ -198,5 +176,21 @@ class Tools {
     }
     var hourPadding = hour < 10 ? " " : "";
     return hourPadding + hour.format("%2d") + ":" + min.format("%02d");
+  }
+
+  static function errorMessage(code as Number) as String {
+    // Error Codes: https://developer.garmin.com/connect-iq/api-docs/Toybox/Communications.html
+    if (code == -1000) {
+      return "Filesystem full.";
+    }
+    if (code == -403) {
+      return "Please restart!";
+    } else if (code == -402) {
+      return "Not enough memory.";
+    } else if (code >= -104 && code < 0) {
+      return "Bluetooth connected?";
+    } else {
+      return "Internet available?";
+    }
   }
 }
