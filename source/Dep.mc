@@ -42,17 +42,11 @@ class Dep extends WatchUi.BehaviorDelegate {
   }
 
   function onNextPage() as Boolean {
-    if (_pageManager.increment()) {
-      WatchUi.requestUpdate();
-    }
-    return true;
+    return _pageManager.increment();
   }
 
   function onPreviousPage() as Boolean {
-    if (_pageManager.decrement()) {
-      WatchUi.requestUpdate();
-    }
-    return true;
+    return _pageManager.decrement();
   }
 
   function start() as Void {
@@ -63,7 +57,7 @@ class Dep extends WatchUi.BehaviorDelegate {
 
   private function makeRequest() as Void {
     if (_retryN == 0) {
-      _notify.invoke("loading departures ...");
+      _notify.invoke("Loading departures ...");
     }
     initRequest();
     // System.println(_url);

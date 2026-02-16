@@ -9,22 +9,30 @@ class MobiApp extends Application.AppBase {
     AppBase.initialize();
   }
 
-  function onStart(state as Dictionary?) as Void {
-    $.Position.checkAndDeleteData(true);
-    $.stationsManager = new $.StationsManager();
-  }
-
   function onStop(state as Dictionary?) as Void {
-    stationsManager.saveCache();
+    if ($.stationsManager != null) {
+      stationsManager.saveCache();
+    }
   }
 
   function getInitialView() as [WatchUi.Views] or
     [WatchUi.Views, WatchUi.InputDelegates] {
+    $.Position.checkAndDeleteData(true);
+    $.stationsManager = new $.StationsManager();
     return [new $.MenuView(), new $.Menu()];
   }
 
+  (:glance)
+  function getGlanceView() as [WatchUi.GlanceView] or
+    [WatchUi.GlanceView, WatchUi.GlanceViewDelegate] or
+    Null {
+    return [new MobiGlanceView()];
+  }
+
   function onSettingsChanged() as Void {
-    $.stationsManager.clearCache();
-    WatchUi.requestUpdate();
+    if ($.stationsManager != null) {
+      $.stationsManager.clearCache();
+      WatchUi.requestUpdate();
+    }
   }
 }

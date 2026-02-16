@@ -21,6 +21,7 @@ class PageManager {
   function increment() as Boolean {
     if (_page < _max) {
       _page++;
+      WatchUi.requestUpdate();
       return true;
     }
     return false;
@@ -29,6 +30,7 @@ class PageManager {
   function decrement() as Boolean {
     if (_page > 1) {
       _page--;
+      WatchUi.requestUpdate();
       return true;
     }
     return false;

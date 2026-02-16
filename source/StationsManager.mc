@@ -85,6 +85,7 @@ class StationsManager {
   function incElement() as Boolean {
     if (_element < _stations.size() - 1) {
       _element++;
+      WatchUi.requestUpdate();
       return true;
     }
     return false;
@@ -93,6 +94,7 @@ class StationsManager {
   function decElement() as Boolean {
     if (_element > 0) {
       _element--;
+      WatchUi.requestUpdate();
       return true;
     }
     return false;
@@ -184,5 +186,10 @@ class StationsManager {
     } else {
       setId(id);
     }
+  }
+
+  function resetStationTempValues(){
+    _stations[_element][1] = null;
+    _stations[_element][4] = null;
   }
 }

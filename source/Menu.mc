@@ -9,23 +9,16 @@ class Menu extends WatchUi.BehaviorDelegate {
   }
 
   function onMenu() as Boolean {
-    $.stationsManager.clearCache();
-    WatchUi.requestUpdate();
+    $.stationsManager.resetStationTempValues();
     return true;
   }
 
   function onNextPage() as Boolean {
-    if ($.stationsManager.incElement()) {
-      WatchUi.requestUpdate();
-    }
-    return true;
+    return $.stationsManager.incElement();
   }
 
   function onPreviousPage() as Boolean {
-    if ($.stationsManager.decElement()) {
-      WatchUi.requestUpdate();
-    }
-    return true;
+    return $.stationsManager.decElement();
   }
 
   function onSelect() as Boolean {
