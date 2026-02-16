@@ -42,17 +42,11 @@ class Dep extends WatchUi.BehaviorDelegate {
   }
 
   function onNextPage() as Boolean {
-    if (_pageManager.increment()) {
-      WatchUi.requestUpdate();
-    }
-    return true;
+    return _pageManager.increment();
   }
 
   function onPreviousPage() as Boolean {
-    if (_pageManager.decrement()) {
-      WatchUi.requestUpdate();
-    }
-    return true;
+    return _pageManager.decrement();
   }
 
   function start() as Void {
@@ -63,7 +57,7 @@ class Dep extends WatchUi.BehaviorDelegate {
 
   private function makeRequest() as Void {
     if (_retryN == 0) {
-      _notify.invoke("loading departures ...");
+      _notify.invoke("Loading departures ...");
     }
     initRequest();
     // System.println(_url);
@@ -137,7 +131,7 @@ class Dep extends WatchUi.BehaviorDelegate {
     _params = {
       "stopId" => $.stationsManager.getId(),
       "n" => RESULTS[idx],
-      "radius" => 100, // include stops within 100m radius -> this includes departures from the same stops from other providers and makes the choice of the stop less problematic
+      "radius" => 20, // include stops within 20m radius -> this includes departures from the same stops from other providers, this is necessary to match all IDs from different providers
       "withAlerts" => false, // not needed and can use up a lot of memory
     };
 

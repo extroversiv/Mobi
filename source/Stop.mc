@@ -62,17 +62,11 @@ class Stop extends WatchUi.BehaviorDelegate {
   }
 
   function onNextPage() as Boolean {
-    if (_stationsSelector.incElement()) {
-      WatchUi.requestUpdate();
-    }
-    return true;
+    return _stationsSelector.incElement();
   }
 
   function onPreviousPage() as Boolean {
-    if (_stationsSelector.decElement()) {
-      WatchUi.requestUpdate();
-    }
-    return true;
+    return _stationsSelector.decElement();
   }
 
   protected function makeRequest() as Void {

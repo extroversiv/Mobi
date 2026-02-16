@@ -12,9 +12,9 @@ class StationsManager {
   function initialize() {
     // load station list from storage or settings (initially)
     // the stations cache stores different values in array, like:
-    //                   | full name       | id (str?)  | products filtered (int?)  | name filtered (string?) | limResults (int?)
+    //                   | full name       | id (str?)  | products filtered (int?)  | name filtered (string?) | limResults (index)
     //                 0 | @               | null       | null                      | null                    | null
-    //                 1 | S+I Berlin Hbf  | xyz        | 33=(100001)_2             | Berlin Hbf              | 16
+    //                 1 | S+I Berlin Hbf  | xyz        | 33=(100001)_2             | Berlin Hbf              | 5
     //                 2 | Pankow          | null       | null                      | null                    | null
     _stations = [];
     _stationsList = [];
@@ -85,6 +85,7 @@ class StationsManager {
   function incElement() as Boolean {
     if (_element < _stations.size() - 1) {
       _element++;
+      WatchUi.requestUpdate();
       return true;
     }
     return false;
@@ -93,6 +94,7 @@ class StationsManager {
   function decElement() as Boolean {
     if (_element > 0) {
       _element--;
+      WatchUi.requestUpdate();
       return true;
     }
     return false;
@@ -184,5 +186,10 @@ class StationsManager {
     } else {
       setId(id);
     }
+  }
+
+  function resetStationTempValues(){
+    _stations[_element][1] = null;
+    _stations[_element][4] = null;
   }
 }

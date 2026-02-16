@@ -12,6 +12,7 @@ class StationsSelector {
   function incElement() as Boolean {
     if (_element < _stationList.size() - 1) {
       _element++;
+      WatchUi.requestUpdate();
       return true;
     }
     return false;
@@ -20,6 +21,7 @@ class StationsSelector {
   function decElement() as Boolean {
     if (_element > 0) {
       _element--;
+      WatchUi.requestUpdate();
       return true;
     }
     return false;
