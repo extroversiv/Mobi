@@ -134,7 +134,7 @@ class Stop extends WatchUi.BehaviorDelegate {
         var pos = conditions.observationLocationPosition;
         if (pos != null) {
           pos = pos.toDegrees();
-          if (pos != null && pos[0].abs() < 90 && pos[1].abs() < 180) {
+          if (pos != null && pos[0].abs() <= 90 && pos[1].abs() <= 180) {
             _params.put("placeBias", 5);
             setCoords(pos);
           }
@@ -178,8 +178,11 @@ class Stop extends WatchUi.BehaviorDelegate {
             var name = s["name"];
             // clean name
             if (!name.equals(prefix)) {
-              name = $.Tools.replace(name, "(" + prefix + ")", "");
-              name = $.Tools.removePrefix(name, prefix);
+              var tmp = $.Tools.replace(name, "(" + prefix + ")", "");
+              tmp = $.Tools.removePrefix(tmp, prefix);
+              if (tmp.length() > 5){
+                name = tmp;
+              }
             }
             name = $.Tools.basicCleanse(name);
             name = $.Tools.shorten(name, 15);

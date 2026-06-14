@@ -209,6 +209,9 @@ class Dep extends WatchUi.BehaviorDelegate {
                 if (dateTime != null) {
                   // t = "2025-10-17T22:10:00Z
                   var epoch = $.Tools.datetimeToEpoch(dateTime, 0);
+                  if (epoch == null) {
+                    continue;
+                  }
                   var time = $.Tools.epochToLocalHHMM(epoch);
                   // shorten line (important information is probably at the end, as in "ICE 1234")
                   var l = line.length();
@@ -229,9 +232,6 @@ class Dep extends WatchUi.BehaviorDelegate {
                   // check for duplicates (can result from differen providers with same data)
                   if (result.indexOf(r) == -1) {
                     result.add(r);
-                  } else {
-                    r = 5;
-                    continue;
                   }
                 }
               }

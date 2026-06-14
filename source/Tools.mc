@@ -144,7 +144,10 @@ class Tools {
   static function datetimeToEpoch(
     datetime as String,
     offsetSeconds as Number
-  ) as Number {
+  ) as Number? {
+    if (datetime.length() != 20){
+      return null;
+    }
     try {
       return (
         Gregorian.moment({
@@ -157,7 +160,7 @@ class Tools {
         }).value() - offsetSeconds
       );
     } catch (e) {
-      return 1;
+      return null;
     }
   }
 
@@ -174,8 +177,7 @@ class Tools {
         hour = 12;
       }
     }
-    var hourPadding = hour < 10 ? " " : "";
-    return hourPadding + hour.format("%2d") + ":" + min.format("%02d");
+    return hour.format("%2d") + ":" + min.format("%02d");
   }
 
   static function errorMessage(code as Number) as String {

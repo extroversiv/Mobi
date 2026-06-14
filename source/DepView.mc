@@ -53,6 +53,9 @@ class DepView extends $.BaseView {
     _maxLines = Math.floor(
       (_height - _marginTop - _marginBottom) / _heightXTiny
     ).toNumber();
+    if (_maxLines < 1) {
+      _maxLines = 1;
+    }
   }
 
   function clockUpdate() as Void {
@@ -130,6 +133,7 @@ class DepView extends $.BaseView {
       Graphics.TEXT_JUSTIFY_CENTER
     );
 
+    _timer.stop();
     _timer.start(method(:clockUpdate), (60 - time.sec) * 1000, false); // recursive, so call only once
   }
 
